@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SightAssist Live Demo</title>
+  <style>
+    #video, #overlay {
+      position: absolute;
+      top: 0; left: 0;
+    }
+    #container {
+      position: relative;
+      width: 640px;
+      height: 480px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Webcam Analysis</h1>
+  <div id="container">
+    <video id="video" width="640" height="480" autoplay muted></video>
+    <canvas id="overlay" width="640" height="480"></canvas>
+  </div>
+  <p id="caption">Waiting for analysis…</p>
+
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const captionEl = document.getElementById('caption');
+
+    // start webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => video.srcObject = stream)
+      .catch(console.error);
+
+    // every 1 second, send a frame
+    setInterval(async () => {
+      ctx.drawImage(video, 0, 0, overlay.width, overlay.height);
+      const dataURL = overlay.toDataURL('image/jpeg');
+      const res = await fetch('/analyze', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({image: dataURL})
+      });
+      if (!res.ok) return;
+      const { objects, texts, caption } = await res.json();
+      captionEl.innerText = caption;
+
+      // draw boxes
+      ctx.lineWidth = 2; ctx.strokeStyle = 'lime';
+      objects.forEach(o => {
+        let [x1,y1,x2,y2] = o.bbox;
+        // map ROI coords back to full canvas if you cropped
+        ctx.strokeRect(x1, y1, x2-x1, y2-y1);
+        ctx.fillText(o.label, x1, y1 - 4);
+      });
+    }, 1000);
+  </script>
+</body>
+</html>
