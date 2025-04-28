@@ -109,7 +109,7 @@ Make sure you have an internet connection on first execution; afterward, models 
 
 1. **Run the GUI app**
    ```bash
-   python desktop_app_accessible.py
+   python desktop_app.py
    ```
 2. **Use controls or keyboard**:
    - Click **Start (S)** or press **S** to open your webcam.
@@ -122,7 +122,7 @@ Make sure you have an internet connection on first execution; afterward, models 
 
 1. **Run the Flask server**
    ```bash
-   python web_app_accessible.py
+   python app.py
    ```
 2. **Open** your browser at `http://localhost:5000`
 3. **Use the on-screen controls**:
