@@ -9,7 +9,7 @@
 
 # Icon must end with two
 Icon
-
+*.wav
 *.pt
 # Thumbnails
 ._*
