@@ -1,42 +1,41 @@
 import torch
+from ultralytics import YOLO
 
 class ObjectDetector:
-    def __init__(self, model_weights='yolov5s', use_cuda=False):
+    def __init__(self, use_cuda=False):
         """
-        Initialize the YOLOv5 model for object detection.
-        model_weights: can be a string for a pre-trained model (e.g. 'yolov5s')
-                       or a path to custom weights (e.g. after fine-tuning).
-        use_cuda: set to True to use GPU (if available) for faster inference.
+        Initialize a YOLO11n model for object detection via the Ultralytics package.
         """
-        # Load YOLOv5 model from PyTorch Hub (downloads weights if not present).
-        # 'yolov5s' is the small COCO-pretrained model. For a custom fine-tuned model, provide path.
-        self.model = torch.hub.load('ultralytics/yolov5', model_weights, pretrained=True)
-        # Use CUDA/GPU if requested and available
-        if use_cuda and torch.cuda.is_available():
-            self.model.to('cuda')
-        else:
-            self.model.to('cpu')
-        self.model.eval()  # Set model to evaluation mode (not training)
+        # Load YOLO11n weights (downloads if needed)
+        self.model = YOLO("yolo11n.pt")                        
+
+        # Move model to GPU if requested
+        device = "cuda" if use_cuda and torch.cuda.is_available() else "cpu"
+        self.model.to(device)
+        # self.model.val()
 
     def detect_objects(self, image):
         """
-        Run object detection on a PIL image. Returns a list of detections, 
-        each a dict with keys: 'label', 'bbox', 'confidence'.
+        Run object detection on an image. Returns a list of dicts:
+        {'label': str, 'bbox': [xmin,ymin,xmax,ymax], 'confidence': float}
         """
-        # YOLOv5 can accept a PIL Image directly or a NumPy array or file path.
-        results = self.model(image)  # perform inference
-        # Parse results. We use the pandas DataFrame output for convenience.
+        results    = self.model(image)               # infer
         detections = []
-        for _, row in results.pandas().xyxy[0].iterrows():
-            label = str(row['name'])        # class name
-            conf  = float(row['confidence'])  # confidence score
-            # Bounding box coordinates (xmin, ymin, xmax, ymax)
-            xmin, ymin, xmax, ymax = float(row['xmin']), float(row['ymin']), float(row['xmax']), float(row['ymax'])
-            bbox = [xmin, ymin, xmax, ymax]
-            detections.append({'label': label, 'bbox': bbox, 'confidence': conf})
-        return detections
 
-# Example usage:
-# detector = ObjectDetector()
-# detections = detector.detect_objects(PIL.Image.open('example.jpg'))
-# print(detections)
+        # Loop over each image result (usually batch size = 1)
+        for res in results:
+            # Iterate each detected box
+            for obj in res.boxes:
+                # Unpack the single-row tensor into four floats
+                xmin, ymin, xmax, ymax = obj.xyxy[0].tolist()
+                # Extract confidence and class, converting tensors to Python scalars
+                conf = obj.conf.item()
+                cls  = int(obj.cls.item())
+
+                label = self.model.names[cls]        # human-readable class name
+                detections.append({
+                    "label":      label,
+                    "bbox":       [xmin, ymin, xmax, ymax],
+                    "confidence": conf
+                })
+        return detections
