@@ -21,7 +21,7 @@
 ---
 
 ## Features
-- **Real-time Object Detection** using the latest YOLO11n (via Ultralytics PyTorch Hub)
+- **Real-time Object Detection** using the latest YOLO11n model (via Ultralytics PyTorch Hub)
 - **Scene Text Recognition (OCR)** via Tesseract (or easily swappable CRNN)
 - **Multimodal Fusion**: associates text with detected objects
 - **Natural-Language Captioning** with BLIP (Vision-Language Transformer)
@@ -142,12 +142,13 @@ SightAssist/
 ├── scene_fusion.py          # Merge detections & text
 ├── caption_generator.py     # BLIP-based captions
 ├── speech_synthesizer.py    # Coqui TTS wrapper
-├── desktop_app_accessible.py# Tkinter GUI
-├── web_app_accessible.py    # Flask backend
+├── desktop_app.py# Tkinter GUI
+├── app.py    # Flask backend
 ├── templates/
 │   └── index.html           # Accessible front-end
 ├── static/
 │   └── audio/               # Generated .wav files
+|   └── icons/
 ├── requirements.txt         # Python dependencies
 └── README.md                # This file
 ```
