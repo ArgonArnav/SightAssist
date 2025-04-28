@@ -21,7 +21,7 @@
 ---
 
 ## Features
-- **Real-time Object Detection** using YOLOv5 (via Ultralytics PyTorch Hub)
+- **Real-time Object Detection** using the latest YOLO11n (via Ultralytics PyTorch Hub)
 - **Scene Text Recognition (OCR)** via Tesseract (or easily swappable CRNN)
 - **Multimodal Fusion**: associates text with detected objects
 - **Natural-Language Captioning** with BLIP (Vision-Language Transformer)
@@ -43,14 +43,14 @@
          ↘ [SceneFusion] ↘ [CaptionGenerator] → [SpeechSynthesizer]
 ```
 
-1. **ObjectDetector** (`object_detection.py`) loads a YOLOv5 model to detect objects and bounding boxes.
+1. **ObjectDetector** (`object_detection.py`) loads the latest YOLO11n model to detect objects and bounding boxes.
 2. **OCRReader** (`ocr_reader.py`) runs Tesseract OCR to extract text segments from the scene.
 3. **SceneFusion** (`scene_fusion.py`) merges object & text outputs, associating text inside object bounds.
 4. **CaptionGenerator** (`caption_generator.py`) uses BLIP to generate an image caption, then appends any extracted text.
 5. **SpeechSynthesizer** (`speech_synthesizer.py`) uses Coqui TTS to convert the caption into a WAV file.
 6. **User Interfaces**:
-   - **Desktop GUI** (`desktop_app_accessible.py`) for local, standalone use.
-   - **Web App** (`web_app_accessible.py` + `templates/index.html`) served via Flask.
+   - **Desktop GUI** (`desktop_app.py`) for local, standalone use.
+   - **Web App** (`app.py` + `templates/index.html`) served via Flask.
 
 ---
 
